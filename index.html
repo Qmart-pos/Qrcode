@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://unpkg.com/html5-qrcode"></script>
-  <title>QR Scanner & Logger</title>
+  <title>QR Scanner</title>
   <style>
     :root {
       --primary: #007bff;
@@ -129,16 +129,10 @@
 <body>
   <div class="container">
     <h1>QR Code Scanner</h1>
-
     <button id="startButton">Start Scan</button>
     <div id="reader"></div>
     <div id="scanner-feedback" class="message"></div>
     <div id="loading-indicator" class="spinner" style="display: none;"></div>
-
-    <h2>Saved QR Data</h2>
-    <button id="refreshDataButton">Refresh</button>
-    <div id="data-fetch-feedback" class="message"></div>
-    <div id="saved-data-list" class="data-list"><p>Loading...</p></div>
   </div>
 
   <script>
@@ -147,9 +141,6 @@
       const readerDiv = document.getElementById('reader');
       const feedback = document.getElementById('scanner-feedback');
       const loading = document.getElementById('loading-indicator');
-      const savedList = document.getElementById('saved-data-list');
-      const refreshButton = document.getElementById('refreshDataButton');
-      const fetchFeedback = document.getElementById('data-fetch-feedback');
       let isScanning = false, html5QrCode;
 
       const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbwksTMkkWm7lJCUjDn1NWlE-5odLTwG3N6XqqkXVAbygfQSpRox3kGDo_fdHU3hzpCh/exec';
@@ -163,7 +154,7 @@
 
       function toggleLoading(show) {
         loading.style.display = show ? 'flex' : 'none';
-        startButton.disabled = refreshButton.disabled = show;
+        startButton.disabled = show;
       }
 
       async function sendToSheet(data) {
@@ -177,7 +168,6 @@
           const result = await res.json();
           if (result.status === 'success') {
             showMessage(feedback, 'QR saved to Google Sheet!', 'success');
-            fetchData();
           } else {
             showMessage(feedback, result.message || 'Error saving data.', 'error');
           }
@@ -220,31 +210,6 @@
           });
         }
       });
-
-    async function fetchData() {
-  toggleLoading(true);
-  savedList.innerHTML = '<p>Loading count...</p>';
-  try {
-    const res = await fetch(GOOGLE_URL);
-    const result = await res.json();
-    if (result.status === 'success') {
-      savedList.innerHTML = `<p>Total Scans: ${result.count}</p>`;
-      showMessage(fetchFeedback, 'Count loaded.', 'success');
-    } else {
-      savedList.innerHTML = '<p>No count found.</p>';
-      showMessage(fetchFeedback, 'No count to show.', 'error');
-    }
-  } catch {
-    savedList.innerHTML = '<p>Error loading count.</p>';
-    showMessage(fetchFeedback, 'Error fetching count.', 'error');
-  } finally {
-    toggleLoading(false);
-  }
-}
-
-
-      refreshButton.addEventListener('click', fetchData);
-      fetchData();
     });
   </script>
 </body>
