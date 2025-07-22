@@ -167,7 +167,7 @@
           });
           const result = await res.json();
           if (result.status === 'success') {
-            showMessage(feedback, 'QR saved to Google Sheet!', 'success');
+            showMessage(feedback, 'Scan Next QR!', 'success');
           } else {
             showMessage(feedback, result.message || 'Error saving data.', 'error');
           }
