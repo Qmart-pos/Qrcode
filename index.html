@@ -152,7 +152,7 @@
       const fetchFeedback = document.getElementById('data-fetch-feedback');
       let isScanning = false, html5QrCode;
 
-      const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbzgxhjDLE0dAaSMlyU0Heospsokoc8pCHHofmDVzuoymKgT2aUmy75giH-MnCnoIyhJ/exec';
+      const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbyNpZ7kMQVyIoZQvzGyiwdR5Y4fj6zBLn8GkwG-JaNFZfJ50onnH2CgGZWonJNGKvKm/exec';
 
       function showMessage(el, text, type) {
         el.className = `message ${type}`;
@@ -221,31 +221,27 @@
         }
       });
 
-      async function fetchData() {
-        toggleLoading(true);
-        savedList.innerHTML = '<p>Loading data...</p>';
-        try {
-          const res = await fetch(GOOGLE_URL);
-          const result = await res.json();
-          if (result.status === 'success' && result.data.length) {
-            savedList.innerHTML = '';
-            result.data.forEach(row => {
-              const p = document.createElement('p');
-              p.textContent = `${row[0]} - ${row[1]}`;
-              savedList.appendChild(p);
-            });
-            showMessage(fetchFeedback, 'Data loaded.', 'success');
-          } else {
-            savedList.innerHTML = '<p>No data found.</p>';
-            showMessage(fetchFeedback, 'No data to show.', 'error');
-          }
-        } catch {
-          savedList.innerHTML = '<p>Error loading data.</p>';
-          showMessage(fetchFeedback, 'Error fetching data.', 'error');
-        } finally {
-          toggleLoading(false);
-        }
-      }
+    async function fetchData() {
+  toggleLoading(true);
+  savedList.innerHTML = '<p>Loading count...</p>';
+  try {
+    const res = await fetch(GOOGLE_URL);
+    const result = await res.json();
+    if (result.status === 'success') {
+      savedList.innerHTML = `<p>Total Scans: ${result.count}</p>`;
+      showMessage(fetchFeedback, 'Count loaded.', 'success');
+    } else {
+      savedList.innerHTML = '<p>No count found.</p>';
+      showMessage(fetchFeedback, 'No count to show.', 'error');
+    }
+  } catch {
+    savedList.innerHTML = '<p>Error loading count.</p>';
+    showMessage(fetchFeedback, 'Error fetching count.', 'error');
+  } finally {
+    toggleLoading(false);
+  }
+}
+
 
       refreshButton.addEventListener('click', fetchData);
       fetchData();
